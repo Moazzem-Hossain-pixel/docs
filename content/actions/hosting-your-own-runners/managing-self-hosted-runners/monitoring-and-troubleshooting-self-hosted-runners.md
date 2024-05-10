@@ -9,13 +9,12 @@ redirect_from:
 versions:
   fpt: '*'
   ghes: '*'
-  ghae: '*'
   ghec: '*'
 type: tutorial
 defaultPlatform: linux
 shortTitle: Monitor & troubleshoot
 ---
- 
+
 {% data reusables.actions.enterprise-github-hosted-runners %}
 
 {% ifversion actions-disable-repo-runners %}
@@ -34,6 +33,7 @@ You may not be able to create a self-hosted runner for an organization-owned rep
 
 {% data reusables.actions.self-hosted-runner-navigate-repo-and-org %}
 {% data reusables.organizations.settings-sidebar-actions-runners %}
+
 1. Under "Runners", you can view a list of registered runners, including the runner's name, labels, and status.
 
     The status can be one of the following:
@@ -87,11 +87,33 @@ By default, the self-hosted runner application verifies the TLS certificate for 
 
 To disable TLS certification verification in the self-hosted runner application, set the `GITHUB_ACTIONS_RUNNER_TLS_NO_VERIFY` environment variable to `1` before configuring and running the self-hosted runner application.
 
+{% linux %}
+
 ```shell
 export GITHUB_ACTIONS_RUNNER_TLS_NO_VERIFY=1
 ./config.sh --url https://github.com/YOUR-ORG/YOUR-REPO --token
 ./run.sh
 ```
+
+{% endlinux %}
+{% mac %}
+
+```shell
+export GITHUB_ACTIONS_RUNNER_TLS_NO_VERIFY=1
+./config.sh --url https://github.com/YOUR-ORG/YOUR-REPO --token
+./run.sh
+```
+
+{% endmac %}
+{% windows %}
+
+```powershell
+[Environment]::SetEnvironmentVariable('GITHUB_ACTIONS_RUNNER_TLS_NO_VERIFY', '1')
+./config.cmd --url https://github.com/YOUR-ORG/YOUR-REPO --token
+./run.sh
+```
+
+{% endwindows %}
 
 {% warning %}
 
@@ -101,13 +123,15 @@ export GITHUB_ACTIONS_RUNNER_TLS_NO_VERIFY=1
 
 ## Reviewing the self-hosted runner application log files
 
-You can monitor the status of the self-hosted runner application and its activities. Log files are kept in the `_diag` directory where you installed the runner application, and a new log is generated each time the application is started. The filename begins with _Runner__, and is followed by a UTC timestamp of when the application was started.
+You can monitor the status of the self-hosted runner application and its activities. Log files are kept in the `_diag` directory where you installed the runner application, and a new log is generated each time the application is started. The filename begins with `Runner_`, and is followed by a UTC timestamp of when the application was started.
 
-For detailed logs on workflow job executions, see the next section describing the _Worker__ files.
+>[!WARNING]Runner application log files for ephemeral runners must be forwarded and preserved externally for troubleshooting and diagnostic purposes. For more information about ephemeral runners and autoscaling self-hosted runners, see "[AUTOTITLE](/actions/hosting-your-own-runners/managing-self-hosted-runners/autoscaling-with-self-hosted-runners#using-ephemeral-runners-for-autoscaling)."
+
+For detailed logs on workflow job executions, see the next section describing the `Worker_` files.
 
 ## Reviewing a job's log file
 
-The self-hosted runner application creates a detailed log file for each job that it processes. These files are stored in the `_diag` directory where you installed the runner application, and the filename begins with _Worker__.
+The self-hosted runner application creates a detailed log file for each job that it processes. These files are stored in the `_diag` directory where you installed the runner application, and the filename begins with `Worker_`.
 
 {% linux %}
 
@@ -221,7 +245,7 @@ PS C:\actions-runner> Get-EventLog -LogName Application -Source ActionsRunnerSer
 
 We recommend that you regularly check the automatic update process, as the self-hosted runner will not be able to process jobs if it falls below a certain version threshold. The self-hosted runner application automatically updates itself, but note that this process does not include any updates to the operating system or other software; you will need to separately manage these updates.
 
-You can view the update activities in the _Runner__ log files. For example:
+You can view the update activities in the `Runner_` log files. For example:
 
 ```shell
 [Feb 12 12:37:07 INFO SelfUpdater] An update is available.
